@@ -1,21 +1,13 @@
-#!/bin/bash
-set -e
-set -u
-set -x
+#!/bin/bash -eux
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-rm -rf $DIR/.git
-rm README.md
-rm install
-rm LICENSE
+cat > ./ssmtp.conf << EOF
+UseTLS=Yes
+UseSTARTTLS=Yes
+root=${MAIL_USER}
+mailhub=${MAIL_HOST}:${MAIL_PORT}
+hostname=${MAIL_HOST}
+AuthUser=${MAIL_USER}
+AuthPass=${MAIL_PASS}
+EOF
 
-git clone https://github.com/piwik/docker-piwik.git .
-
-MYSQL_ROOT_PASSWORD=`tr -dc A-Za-z0-9_ < /dev/urandom | head -c 20 | xargs`
-
-echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" > .env
-echo "MYSQL_DATABASE=piwik" >> .env
-echo "MAIL_PASS=${MAIL_PASS}" >> .env
-echo "MAIL_USER=${MAIL_USER}" >> .env
-echo "MAIL_HOST=${MAIL_HOST}" >> .env
-echo "MAIL_PORT=${MAIL_PORT}" >> .env
+echo "www-data:${MAIL_USER}:${MAIL_HOST}:${MAIL_PORT}" >> ./revaliases
