@@ -3,7 +3,7 @@ db:
   volumes:
     - ./mysql/runtime:/var/lib/mysql
   environment:
-    MYSQL_ROOT_PASSWORD
+    - MYSQL_ROOT_PASSWORD
 app:
   image: piwik
   links:
