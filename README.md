@@ -28,7 +28,7 @@ You can now access your instance on the port 80 of the IP of your machine (not r
 
 ## Access it from Internet
 
-We recommend the usage of SSL, so the easiest is to use a TLS capable reverse proxy.
+We recommend the usage of TLS, so the easiest is to use a TLS capable reverse proxy.
 Here are 2 examples:
 
  - [haproxy](https://github.com/indiehosters/haproxy)
