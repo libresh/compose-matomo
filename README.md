@@ -20,27 +20,21 @@ Make sure you have [docker-compose](http://docs.docker.com/compose/install/) ins
 
 ```bash
 git clone https://github.com/indiehosters/piwik.git
-cd docker-piwik
-# edit variables in the docker-compose file or pass them from your comamnd line
-docker-compose up
+cd piwik
+MYSQL_ROOT_PASSWORD=mystrongpassword docker-compose up
 ```
 
 You can now access your instance on the port 80 of the IP of your machine (not recommended for production).
 
 ## Access it from Internet
 
-We recommend the usage of SSL, so the easiest is to modify the `nginx.conf` file.
+We recommend the usage of SSL, so the easiest is to use a TLS capable reverse proxy.
+Here are 2 examples:
 
-Once it is done, you can connect to the port of the host by adding this line to `docker-compose.yml`:
+ - [haproxy](https://github.com/indiehosters/haproxy)
+ - [nginx](https://github.com/indiehosters/nginx)
 
-```
-web:
-...
-  ports:
-    - "443:443"
-    - "80:80"
-...
-```
+You can also modify manually the nginx configuration file and map the TLS port of the host to the container.
 
 ## Installation
 
@@ -71,7 +65,7 @@ export MAIL_PORT=587
 
 ## Backup
 
-In order to backup, just run the `./BACKUP` script. And copy all the data to a safe place.
+In order to backup, just run the `./pre-backup` script. And copy all the data to a safe place.
 
 ## Contribute
 
