@@ -1,38 +1,44 @@
-db:
-  image: mysql
-  volumes:
-    - ./mysql/runtime:/var/lib/mysql
-  environment:
-    - MYSQL_ROOT_PASSWORD
-app:
-  image: piwik
-  links:
-    - db
+version: '2'
+services:
+  web:
+    image: nginx
+    expose:
+      - "8002"
+    ports:
+      - "8002:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    volumes_from:
+      - app
+    depends_on:
+      - app
+  app:
+    image: piwik
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
   volumes:
     - ./config:/var/www/html/config
     - ./ssmtp.conf:/etc/ssmtp/ssmtp.conf
     - ./revaliases:/etc/ssmtp/revaliases
-web:
-  image: nginx
-  volumes:
-    - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  links:
-    - app
-  volumes_from:
-    - app
-  environment:
-    - VIRTUAL_HOST
-cron:
-  image: piwik
-  links:
-    - db
-  volumes_from:
-    - app
-  entrypoint: |
-    bash -c 'bash -s <<EOF
-    trap "break;exit" SIGHUP SIGINT SIGTERM
-    while /bin/true; do
-      su -s "/bin/bash" -c "/usr/local/bin/php /var/www/html/console core:archive" www-data
-      sleep 3600
-    done
-    EOF'
+    depends_on:
+      - db
+  db:
+    image: mariadb
+    volumes:
+      - /mysql/runtime:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+  cron:
+    image: piwik
+    depends_on:
+      - app
+    volumes_from:
+      - app
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      while /bin/true; do
+        su -s "/bin/bash" -c "/usr/local/bin/php /var/www/html/console core:archive" www-data
+        sleep 3600
+      done
+      EOF'
