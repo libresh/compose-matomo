@@ -14,7 +14,7 @@ services:
     networks:
     - back
   app:
-    image: piwik
+    image: piwik:fpm
     links:
       - db
     volumes:
@@ -35,7 +35,7 @@ services:
     - back
     - lb_web
   cron:
-    image: piwik
+    image: piwik:fpm
     links:
       - db
     volumes_from:
