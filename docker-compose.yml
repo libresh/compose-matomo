@@ -34,6 +34,9 @@ services:
     networks:
     - back
     - lb_web
+    ports:
+      - "80:80"
+      - "443:443"
   cron:
     image: piwik:fpm
     links:
