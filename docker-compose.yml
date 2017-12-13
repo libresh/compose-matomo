@@ -1,14 +1,17 @@
-version: '2'
+version: '3'
 networks:
   lb_web:
     external: true
   back:
     driver: bridge
+volumes:
+  db_data:
+  app_data:
 services:
   db:
     image: mysql
     volumes:
-      - ./mysql/runtime:/var/lib/mysql
+      - db_data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD
     networks:
@@ -18,17 +21,18 @@ services:
     links:
       - db
     volumes:
-      - ./config:/var/www/html/config
+      - app_data:/var/www/html
     networks:
     - back
   web:
     image: nginx
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - app_data:/var/www/html
     links:
       - app
-    volumes_from:
-      - app
+    ports:
+      - 80:80
     environment:
       - VIRTUAL_HOST
     networks:
@@ -38,8 +42,8 @@ services:
     image: piwik:fpm
     links:
       - db
-    volumes_from:
-      - app
+    volumes:
+      - app_data:/var/www/html
     entrypoint: |
       bash -c 'bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
