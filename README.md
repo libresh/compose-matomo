@@ -21,10 +21,14 @@ Make sure you have [docker-compose](http://docs.docker.com/compose/install/) ins
 ```bash
 git clone https://github.com/indiehosters/piwik.git
 cd piwik
-MYSQL_ROOT_PASSWORD=mystrongpassword docker-compose up
+MYSQL_ROOT_PASSWORD='mystrongpassword' docker-compose up
 ```
 
 You can now access your instance on the port 80 of the IP of your machine (not recommended for production).
+
+Should you choose to use the reverse proxies suggested below, your `docker-compose` command will look like this:
+
+`MYSQL_ROOT_PASSWORD='mystrongpassword' VIRTUAL_HOST='subdomain.example.com' docker-compose up`
 
 ## Access it from Internet
 
@@ -49,6 +53,21 @@ At the `Database Setup` step, please enter the following:
 And leave the rest as default.
 
 Then you can continue the installation with the super user.
+
+## Changing PHP Configuration
+
+Inside `fpm-config` directory, you can create a directory called `php-fpm.d-extra` and add any files that end in `.conf`. They will be picked up as settings for php-fpm.
+
+For example to increase `pm.max_children` limit to 10, we do this:
+
+```bash
+cd fpm-config
+mkdir php-fpm.d-extra
+echo "pm.max_children = 20" > child.conf
+
+# restart everything
+MYSQL_ROOT_PASSWORD='mystrongpassword' docker-compose up
+```
 
 ## Backup
 
