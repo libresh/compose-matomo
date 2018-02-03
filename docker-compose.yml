@@ -18,13 +18,16 @@ services:
     links:
       - db
     volumes:
-      - ./config:/var/www/html/config
+      - ./piwik-config:/var/www/html/config
+      - ./fpm-config/php-fpm.d-extra:/usr/local/etc/php-fpm.d-extra
+      - ./fpm-config/php-fpm.conf:/usr/local/etc/php-fpm.conf
     networks:
     - back
   web:
     image: nginx
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx-conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx:/var/log/nginx
     links:
       - app
     volumes_from:
@@ -32,8 +35,12 @@ services:
     environment:
       - VIRTUAL_HOST
     networks:
-    - back
-    - lb_web
+      - back
+      - lb_web
+    #uncomment these if you don't plan to add a proxy in front of nginx or can be used for debugging
+    #ports:
+    #  - "80:80"
+    #  - "443:443"
   cron:
     image: piwik:fpm
     links:
