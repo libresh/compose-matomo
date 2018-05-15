@@ -21,6 +21,8 @@ Make sure you have [docker-compose](http://docs.docker.com/compose/install/) ins
 ```bash
 git clone https://github.com/indiehosters/piwik.git
 cd piwik
+docker network create lb_web
+docker network create back
 MYSQL_ROOT_PASSWORD=mystrongpassword docker-compose up
 ```
 
